@@ -60,10 +60,11 @@ data.index  = data['timestamp']
 
 data.drop('timestamp', axis =1, inplace=True)
 
-def process_tallies(data):
-    for day in quarter_3_range:
+def process_tallies(lst_days):
+    for day in lst_days:
         logging.info("Processing date : {}".format(day))
         process_day(data, day)
+
 
 def process_day(data, day):
     df = data[day]
@@ -87,7 +88,30 @@ def process_day(data, day):
         else:
             observations.to_csv('clean_data/{}.csv'.format(day),mode = 'a', index_label='timestamp', header=None)
 
-process_tallies(data)
+
+def chunks(L, n):
+    """ Yield successive n-sized chunks from L.
+    """
+    for i in range(0, len(L), n):
+        yield L[i:i+n]
+
+generate_dates = chunks(quarter_3_range,23)
+
+import multiprocessing as mp
+
+processes = [mp.Process(target=process_tallies, args=(x,)) for x in generate_dates]
+
+
+# Run processes
+for p in processes:
+    p.start()
+
+# Exit the completed processes
+for p in processes:
+    p.join()
+
+
+# process_tallies(['2013-09-28','2013-09-29','2013-09-30'])?
 
 
 
