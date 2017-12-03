@@ -45,7 +45,7 @@ quarter_3_range = [str(item.date()) for item in pd.date_range(start='07-01-2013'
 
 # Takes 588 seconds: completed  2855479 (2860000) rows
 start = dt.now()
-for df in pd.read_csv('MTA_Pivotdown.txt', chunksize=chunk_size, iterator=True, encoding='utf-8'):
+for df in pd.read_csv('MTA_Pivotdown_updated.txt', chunksize=chunk_size, iterator=True, encoding='utf-8'):
     process_df(df)
 
     j+=1
@@ -78,7 +78,7 @@ def process_day(data, day):
         observations['val_exits'] = observations.exits - observations.exits.shift(1)
     
         mask = (observations['val_entries'] > 0) & (observations['val_exits'] > 0) & \
-                (observations['val_entries'] < 4000) & (observations['val_exits'] < 4000)
+                (observations['val_entries'] < 5000) & (observations['val_exits'] < 5000)
         
         observations = observations[mask]
         observations.drop(['entries','exits','date','time'], inplace = True, axis = 1)
